@@ -133,5 +133,5 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
   name = "meta_protocol_proxy",
   remote = "https://github.com/aeraki-framework/meta-protocol-proxy.git",
-  commit = "dc19282",
+  commit = "5ae1d11",
 )

@@ -11,7 +11,7 @@ envoy_cc_binary(
     deps = [
         "//src/application_protocols/awesomerpc:config",
         "@meta_protocol_proxy//src/meta_protocol_proxy:config",
-	"@meta_protocol_proxy//src/application_protocols/dubbo:config",
+        "@meta_protocol_proxy//src/application_protocols/dubbo:config",
         "@meta_protocol_proxy//src/application_protocols/thrift:config",
         "@io_istio_proxy//extensions/access_log_policy:access_log_policy_lib",
         "@io_istio_proxy//extensions/attributegen:attributegen_plugin",

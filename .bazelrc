@@ -1,2 +1,2 @@
-import %workspace%/envoy.bazelrc
 import %workspace%/proxy.bazelrc
+build --cxxopt -Wno-unknown-warning-option

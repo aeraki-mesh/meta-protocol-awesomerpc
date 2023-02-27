@@ -2,7 +2,7 @@
 
 #include "envoy/buffer/buffer.h"
 
-#include "common/common/logger.h"
+#include "source/common/common/logger.h"
 
 #include "src/meta_protocol_proxy/codec/codec.h"
 #include "src/application_protocols/awesomerpc/awesomerpc_codec.h"
@@ -15,7 +15,7 @@ namespace Awesomerpc {
 
 MetaProtocolProxy::DecodeStatus AwesomerpcCodec::decode(Buffer::Instance& buffer,
                                                   MetaProtocolProxy::Metadata& metadata) {
-  ENVOY_LOG(debug, "Awesomerpc decoder: {} bytes available, msg type: {}", buffer.length(), metadata.getMessageType());
+  ENVOY_LOG(debug, "Awesomerpc decoder: {} bytes available", buffer.length());
   messageType_ = metadata.getMessageType();
   ASSERT(messageType_ == MetaProtocolProxy::MessageType::Request ||
          messageType_ == MetaProtocolProxy::MessageType::Response);
@@ -69,7 +69,7 @@ AwesomerpcDecodeStatus AwesomerpcCodec::handleState(Buffer::Instance& buffer) {
   case AwesomerpcDecodeStatus::DecodePayload:
     return decodeBody(buffer);
   default:
-    NOT_REACHED_GCOVR_EXCL_LINE;
+    PANIC("not reached");
   }
   return AwesomerpcDecodeStatus::DecodeDone;
 }
@@ -106,7 +106,7 @@ AwesomerpcDecodeStatus AwesomerpcCodec::decodeBody(Buffer::Instance& buffer) {
 void AwesomerpcCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
   metadata.setRequestId(awesomerpc_header_.get_pack_flow());
   metadata.putString("cmd", std::to_string(awesomerpc_header_.get_req_cmd()));
-  metadata.setOriginMessage(*origin_msg_);
+  metadata.originMessage().move(*origin_msg_);
 }
 
 } // namespace Awesomerpc

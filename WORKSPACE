@@ -3,34 +3,11 @@ workspace(name = "meta_protocol_awesomerpc")
 # http_archive is not a native function since bazel 0.19
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
-# 1. Determine SHA256 `wget https://github.com/envoyproxy/envoy/archive/$COMMIT.tar.gz && sha256sum $COMMIT.tar.gz`
-# 2. Update .bazelversion, envoy.bazelrc and .bazelrc if needed.
-#
-# Note: this is needed by release builder to resolve envoy dep sha to tag.
-# Commit date: 2021-05-11
-
-ENVOY_SHA = "98c1c9e9a40804b93b074badad1cdf284b47d58b"
-
-ENVOY_SHA256 = "4365a4c09b9a8b3c4ae34d75991fcd046f3e19d53d95dfd5c89209c30be94fe6"
-
-ENVOY_ORG = "envoyproxy"
-
-ENVOY_REPO = "envoy"
-
-# To override with local envoy, just pass `--override_repository=envoy=/PATH/TO/ENVOY` to Bazel or
-# persist the option in `user.bazelrc`.
-http_archive(
-    name = "envoy",
-    sha256 = ENVOY_SHA256,
-    strip_prefix = ENVOY_REPO + "-" + ENVOY_SHA,
-    url = "https://github.com/" + ENVOY_ORG + "/" + ENVOY_REPO + "/archive/" + ENVOY_SHA + ".tar.gz",
-)
-
 http_archive(
     name = "io_istio_proxy",
-    strip_prefix = "proxy-1.10.0",
-    sha256 = "19d13bc4859dc8422b91fc28b0d8d12a34848393583eedfb08af971c658e7ffb",
-    url = "https://github.com/istio/proxy/archive/refs/tags/1.10.0.tar.gz",
+    strip_prefix = "proxy-1.14.5",
+    sha256 = "5f609018554bce88a48e2fcd0c6317ce19d79af031f33389c7916a1b9d91c88a",
+    url = "https://github.com/istio/proxy/archive/refs/tags/1.14.5.tar.gz",
 )
 
 load(
@@ -49,8 +26,36 @@ bind(
     actual = "//external:ssl",
 )
 
+# 1. Determine SHA256 `wget https://github.com/envoyproxy/envoy/archive/$COMMIT.tar.gz && sha256sum $COMMIT.tar.gz`
+# 2. Update .bazelversion, envoy.bazelrc and .bazelrc if needed.
+#
+# Note: this is needed by release builder to resolve envoy dep sha to tag.
+# Commit date: 2022-08-18
+ENVOY_SHA = "fee1c20b5c0b168aef50a4455bb6bcc8869e6590"
+
+ENVOY_SHA256 = "782a886eb13f0a6002be820f2215540182610a9613bf4b93962422f3c7828d55"
+
+ENVOY_ORG = "envoyproxy"
+
+ENVOY_REPO = "envoy"
+
+# To override with local envoy, just pass `--override_repository=envoy=/PATH/TO/ENVOY` to Bazel or
+# persist the option in `user.bazelrc`.
+http_archive(
+    name = "envoy",
+    sha256 = ENVOY_SHA256,
+    strip_prefix = ENVOY_REPO + "-" + ENVOY_SHA,
+    url = "https://github.com/" + ENVOY_ORG + "/" + ENVOY_REPO + "/archive/" + ENVOY_SHA + ".tar.gz",
+    patches = ["//:patches/0001-expose-some-build-file-as-public.patch"],
+)
 
 load("@envoy//bazel:api_binding.bzl", "envoy_api_binding")
+
+local_repository(
+    name = "envoy_build_config",
+    # Relative paths are also supported.
+    path = "bazel/extension_config",
+)
 
 envoy_api_binding()
 
@@ -65,6 +70,10 @@ envoy_dependencies()
 load("@envoy//bazel:repositories_extra.bzl", "envoy_dependencies_extra")
 
 envoy_dependencies_extra()
+
+load("@base_pip3//:requirements.bzl", "install_deps")
+
+install_deps()
 
 load("@envoy//bazel:dependency_imports.bzl", "envoy_dependency_imports")
 
@@ -133,5 +142,5 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
   name = "meta_protocol_proxy",
   remote = "https://github.com/aeraki-mesh/meta-protocol-proxy.git",
-  commit = "5ae1d11",
+  commit = "fe9d11fc697c489a809161b0d6214cc432516787", # meta-protocol-proxy 1.2.3 //support istio stats
 )

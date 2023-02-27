@@ -3,10 +3,6 @@ bazel-*
 GPATH
 GTAGS
 GRTAGS
-trpc.app.Greeter
-go.sum
-core
-xds
 CMakeLists.txt
 sourcefiles.txt
 .idea
